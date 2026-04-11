@@ -1,0 +1,57 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* ── Tailwind v4 design tokens ──────────────────────────────── */
+@theme {
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body:    'Manrope', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+
+  --color-arena-bg:      #0a0a1a;
+  --color-surface:       #121222;
+  --color-surface-low:   #1a1a2b;
+  --color-surface-mid:   #1e1e2f;
+  --color-surface-high:  #29283a;
+  --color-surface-top:   #333345;
+  --color-primary:       #d2bbff;
+  --color-primary-c:     #7c3aed;
+  --color-secondary:     #4cd7f6;
+  --color-on-surface:    #e3e0f8;
+  --color-on-muted:      #ccc3d8;
+  --color-outline:       #958da1;
+  --color-outline-dim:   #4a4455;
+  --color-win-green:     #4ade80;
+  --color-tertiary:      #ffb784;
+}
+
+/* ── Keyframes (only things CSS can do) ─────────────────────── */
+@keyframes pulse-dot {
+  0%,100% { opacity:1; transform:scale(1);   }
+  50%      { opacity:.4; transform:scale(.65); }
+}
+@keyframes slide-up {
+  from { opacity:0; transform:translateY(22px); }
+  to   { opacity:1; transform:translateY(0);    }
+}
+@keyframes fade-in {
+  from { opacity:0; }
+  to   { opacity:1; }
+}
+@keyframes winner-reveal {
+  0%   { opacity:0; transform:scale(.92) translateY(12px); }
+  60%  { transform:scale(1.02) translateY(-2px);           }
+  100% { opacity:1; transform:scale(1)   translateY(0);    }
+}
+@keyframes score-pop {
+  0%   { transform:scale(.55); opacity:0; }
+  80%  { transform:scale(1.1);            }
+  100% { transform:scale(1);  opacity:1;  }
+}
+@keyframes spin-cw  { to { transform:rotate(360deg);  } }
+@keyframes spin-ccw { to { transform:rotate(-360deg); } }
+
+/* ── Thin custom scrollbar ──────────────────────────────────── */
+::-webkit-scrollbar        { width:5px; height:5px; }
+::-webkit-scrollbar-track  { background:transparent; }
+::-webkit-scrollbar-thumb  { background:#4a4455; border-radius:99px; }
+::-webkit-scrollbar-thumb:hover { background:#7c3aed; }

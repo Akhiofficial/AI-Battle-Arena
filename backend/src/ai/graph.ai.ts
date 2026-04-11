@@ -28,7 +28,7 @@ const solutionNode: GraphNode<typeof state> = async (state) => {
         mistralModel.invoke(state.problem),
         cohereModel.invoke(state.problem)
     ])
-
+ 
     return {
         solution_1: mistralResponse.text,
         solution_2: cohereResponse.text
