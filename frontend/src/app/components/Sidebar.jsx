@@ -1,19 +1,10 @@
-const SAMPLE_HISTORY = [
-  { id: 1, title: 'Factorial Function in JS',    time: 'Just now' },
-  { id: 2, title: 'Binary Search Algorithm',     time: '2h ago'   },
-  { id: 3, title: 'React useEffect Hooks',        time: 'Yesterday' },
-  { id: 4, title: 'SQL JOIN Optimization',        time: '2d ago'   },
-];
-
 export default function Sidebar({ onNewBattle, onSelectBattle, battles, activeId }) {
-  const history = battles.length > 0
-    ? battles.map((b) => ({ 
-        id: b._id, 
-        title: b.problem, 
-        time: new Date(b.createdAt).toLocaleDateString() === new Date().toLocaleDateString() ? 'Today' : 'Past',
-        data: b
-      }))
-    : SAMPLE_HISTORY;
+  const history = battles.map((b) => ({ 
+    id: b._id, 
+    title: b.problem, 
+    time: new Date(b.createdAt).toLocaleDateString() === new Date().toLocaleDateString() ? 'Today' : 'Past',
+    data: b
+  }));
 
   return (
     <aside
@@ -71,34 +62,41 @@ export default function Sidebar({ onNewBattle, onSelectBattle, battles, activeId
           Battle History
         </p>
         <div className="flex flex-col gap-0.5 overflow-y-auto flex-1">
-          {history.map((b, idx) => (
-            <div
-              key={b.id || idx}
-              onClick={() => onSelectBattle && b.data && onSelectBattle(b.data)}
-              className={`flex items-start gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer transition-colors duration-150 ${
-                activeId === b.id ? 'bg-[rgba(124,58,237,.2)]' : 'hover:bg-[rgba(124,58,237,.1)]'
-              }`}
-            >
-              <span
-                className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0"
-                style={{
-                  background: activeId === b.id ? '#7c3aed' : '#4a4455',
-                  boxShadow: activeId === b.id ? '0 0 8px rgba(124,58,237,.6)' : 'none',
-                }}
-              />
-              <div className="flex-1 min-w-0">
-                <p
-                  className="text-[0.82rem] font-medium truncate"
-                  style={{ color: activeId === b.id ? '#e3e0f8' : '#ccc3d8' }}
-                >
-                  {b.title}
-                </p>
-                {b.time && (
-                  <p className="text-[0.68rem] text-outline mt-0.5">{b.time}</p>
-                )}
+          {history.length > 0 ? (
+            history.map((b, idx) => (
+              <div
+                key={b.id || idx}
+                onClick={() => onSelectBattle && b.data && onSelectBattle(b.data)}
+                className={`flex items-start gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer transition-colors duration-150 ${
+                  activeId === b.id ? 'bg-[rgba(124,58,237,.2)]' : 'hover:bg-[rgba(124,58,237,.1)]'
+                }`}
+              >
+                <span
+                  className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0"
+                  style={{
+                    background: activeId === b.id ? '#7c3aed' : '#4a4455',
+                    boxShadow: activeId === b.id ? '0 0 8px rgba(124,58,237,.6)' : 'none',
+                  }}
+                />
+                <div className="flex-1 min-w-0">
+                  <p
+                    className="text-[0.82rem] font-medium truncate"
+                    style={{ color: activeId === b.id ? '#e3e0f8' : '#ccc3d8' }}
+                  >
+                    {b.title}
+                  </p>
+                  {b.time && (
+                    <p className="text-[0.68rem] text-outline mt-0.5">{b.time}</p>
+                  )}
+                </div>
               </div>
+            ))
+          ) : (
+            <div className="flex flex-col items-center justify-center py-8 text-center opacity-40">
+              <span className="text-xl mb-1">📭</span>
+              <p className="text-[0.7rem] text-on-muted">No history yet</p>
             </div>
-          ))}
+          )}
         </div>
       </div>
 

@@ -1,16 +1,12 @@
-import { StateGraph, StateSchema, START, END, type GraphNode, type CompiledStateGraph } from "@langchain/langgraph";
+import { StateGraph, StateSchema, START, END, type GraphNode } from "@langchain/langgraph";
 import { z } from "zod";
 import { cohereModel, geminiModel, mistralModel } from "./models.ai.js";
 import { createAgent, providerStrategy } from "langchain";
-import { HumanMessage } from "@langchain/core/messages";
+import { HumanMessage, BaseMessage, AIMessage } from "@langchain/core/messages";
 
-/**
- * StateSchema for the graph nodes (basically structure of nodes) used to defined format of data 
- * 
- * typescript use to defined types so here we are defineding format type etc 
- */
 const state = new StateSchema({
     problem: z.string().default(""),
+    history: z.array(z.custom<BaseMessage>()).default([]),
     solution_1: z.string().default(""),
     solution_2: z.string().default(""),
     judge: z.object({
@@ -21,23 +17,22 @@ const state = new StateSchema({
     })
 })
 
-// type defined 
 const solutionNode: GraphNode<typeof state> = async (state) => {
+    const messages = [...state.history, new HumanMessage(state.problem)];
 
     const [mistralResponse, cohereResponse] = await Promise.all([
-        mistralModel.invoke(state.problem),
-        cohereModel.invoke(state.problem)
+        mistralModel.invoke(messages),
+        cohereModel.invoke(messages)
     ])
  
     return {
-        solution_1: mistralResponse.text,
-        solution_2: cohereResponse.text
+        solution_1: mistralResponse.content as string,
+        solution_2: cohereResponse.content as string
     }
 }
 
 const judgeNode: GraphNode<typeof state> = async (state) => {
-
-    const { problem, solution_1, solution_2 } = state
+    const { problem, solution_1, solution_2, history } = state
 
     const judge = createAgent({
         model: geminiModel,
@@ -47,16 +42,17 @@ const judgeNode: GraphNode<typeof state> = async (state) => {
             solution_1_reasoning: z.string().default(""),
             solution_2_reasoning: z.string().default("")
         })),
-        systemPrompt: "You are a judge tasked with evaluting the solutions generate, Please Provide a score out of 10 for each solution, along with your reasoning for the scores"
+        systemPrompt: "You are a judge tasked with evaluating the solutions generated. Please provide a score out of 10 for each solution, along with your reasoning. Consider the conversation history if provided."
     })
 
     const judgeResponse = await judge.invoke({
         messages: [
+            ...history,
             new HumanMessage({
                 content: `Problem: ${problem}
             Solution 1: ${solution_1}
             Solution 2: ${solution_2} 
-            please evalute the solutions and provide scores and reasoning. `
+            please evaluate the solutions based on the problem and previous context, and provide scores and reasoning.`
             })
         ]
     })
@@ -74,7 +70,6 @@ const judgeNode: GraphNode<typeof state> = async (state) => {
 }
 
 const graph = new StateGraph(state)
-
     .addNode("solution_node", solutionNode)
     .addNode("judge_node", judgeNode)
     .addEdge(START, "solution_node")
@@ -82,11 +77,13 @@ const graph = new StateGraph(state)
     .addEdge("judge_node", END)
     .compile()
 
-export default async function runGraph(problem: string) {
+export default async function runGraph(problem: string, history: BaseMessage[] = []) {
     const result = await graph.invoke({
-        problem: problem
+        problem: problem,
+        history: history
     })
     return result
 }
+
 
 
