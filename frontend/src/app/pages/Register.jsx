@@ -2,13 +2,15 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+import { GoogleLogin } from '@react-oauth/google';
+
 export default function Register() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { register } = useAuth();
+  const { register, googleLogin } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -112,6 +114,27 @@ export default function Register() {
               </span>
             </button>
           </form>
+
+          <div className="my-6 flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-outline">
+            <div className="h-px flex-1 bg-outline-dim/30"></div>
+            <span>OR</span>
+            <div className="h-px flex-1 bg-outline-dim/30"></div>
+          </div>
+
+          <div className="flex justify-center">
+            <GoogleLogin
+              onSuccess={(credentialResponse) => {
+                googleLogin(credentialResponse.credential)
+                  .then(() => navigate('/'))
+                  .catch((err) => setError(err.response?.data?.error || 'Google Registration failed'));
+              }}
+              onError={() => {
+                setError('Google Login failed');
+              }}
+              theme="filled_black"
+              shape="pill"
+            />
+          </div>
 
           <p className="mt-8 text-center text-sm text-on-muted">
             Already have an account?{' '}

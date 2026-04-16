@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+import { GoogleLogin } from '@react-oauth/google';
+
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, googleLogin } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -97,6 +99,27 @@ export default function Login() {
               </span>
             </button>
           </form>
+
+          <div className="my-6 flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-outline">
+            <div className="h-px flex-1 bg-outline-dim/30"></div>
+            <span>OR</span>
+            <div className="h-px flex-1 bg-outline-dim/30"></div>
+          </div>
+
+          <div className="flex justify-center">
+            <GoogleLogin
+              onSuccess={(credentialResponse) => {
+                googleLogin(credentialResponse.credential)
+                  .then(() => navigate('/'))
+                  .catch((err) => setError(err.response?.data?.error || 'Google Login failed'));
+              }}
+              onError={() => {
+                setError('Google Login failed');
+              }}
+              theme="filled_black"
+              shape="pill"
+            />
+          </div>
 
           <p className="mt-8 text-center text-sm text-on-muted">
             New to the Arena?{' '}

@@ -43,13 +43,17 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
     };
 
+    const googleLogin = async (credential) => {
+        const res = await axios.post('/api/auth/google', { credential });
+        setUser(res.data);
+        return res.data;
+    };
+
     return (
-        <AuthContext.Provider value={{ user, loading, login, register, logout, checkUser }}>
+        <AuthContext.Provider value={{ user, loading, login, register, logout, checkUser, googleLogin }}>
             {children}
         </AuthContext.Provider>
     );
 };
 
 export const useAuth = () => useContext(AuthContext);
-
-export default AuthContext;
