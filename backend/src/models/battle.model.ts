@@ -13,6 +13,7 @@ export interface ITurn {
 }
 
 export interface IBattle extends Document {
+    user: mongoose.Types.ObjectId;
     problem: string;
     solution_1: string;
     solution_2: string;
@@ -27,6 +28,7 @@ export interface IBattle extends Document {
 }
 
 const BattleSchema: Schema = new Schema({
+    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
     problem: { type: String, required: true },
     solution_1: { type: String, required: true },
     solution_2: { type: String, required: true },

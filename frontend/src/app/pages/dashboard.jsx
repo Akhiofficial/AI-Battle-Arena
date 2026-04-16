@@ -3,6 +3,7 @@ import Sidebar from '../components/Sidebar';
 import SolutionCard from '../components/SolutionCard';
 import JudgeVerdict from '../components/JudgeVerdict';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 
 
 const TIPS = [
@@ -17,6 +18,7 @@ export default function Dashboard() {
   const [loading, setLoading]       = useState(false);
   const [error, setError]           = useState('');
   const [battles, setBattles]       = useState([]);
+  const { logout, user }            = useAuth();
   const textareaRef = useRef(null);
   const resultsRef  = useRef(null);
 
@@ -25,7 +27,7 @@ export default function Dashboard() {
 
   // axios get history from backend on mount
   useEffect(() => {
-    axios.get('http://localhost:3000/api/battles')
+    axios.get('/api/battles')
       .then(res => {
         const data = res.data;
         if (Array.isArray(data)) {
@@ -58,7 +60,7 @@ export default function Dashboard() {
     if (!currentBattleId) setBattleData(null);
     setInput('');
     try {
-      const response = await axios.post('http://localhost:3000/api/battle', {
+      const response = await axios.post('/api/battle', {
         problem,
         battleId: currentBattleId
       });
@@ -151,6 +153,20 @@ export default function Dashboard() {
             >
               {battleData ? (battleData.problem || 'Active Battle') : 'Start a New Battle'}
             </h1>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="flex flex-col items-end gap-0.5">
+              <span className="text-[0.7rem] font-bold text-on-surface">{user?.username}</span>
+              <span className="text-[0.6rem] text-on-muted opacity-70">{user?.email}</span>
+            </div>
+            <button
+              onClick={logout}
+              className="flex h-10 items-center justify-center gap-2 rounded-xl border border-outline-dim bg-surface-low px-4 text-[0.78rem] font-bold text-on-surface transition-all hover:bg-surface-top hover:text-white"
+              style={{ fontFamily: 'var(--font-display)' }}
+            >
+              Sign Out
+            </button>
           </div>
         </header>
 
