@@ -8,6 +8,7 @@ import battleRoutes from "./routes/battle.routes.js"
 connectDB();
 
 const app = express()
+app.set("trust proxy", 1);
 
 const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
 const allowedOrigins = [
