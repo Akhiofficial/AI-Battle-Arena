@@ -26,7 +26,7 @@ app.use(express.json())
 app.use(cookieParser())
 
 // Add COOP header for Google Sign-in to work in popups
-app.use((req, res, next) => {
+app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
     res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
     next();
 });
